@@ -100,14 +100,13 @@ void SetMouseMode(Mode mode)
 
 void InitMouse(HWND window, Mode mode)
 {
-	Rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
-	Rid.usUsage = HID_USAGE_GENERIC_MOUSE;
-	Rid.dwFlags = RIDEV_NOLEGACY | RIDEV_CAPTUREMOUSE; //adds mouse and also ignores legacy mouse messages
-	Rid.hwndTarget = window;
-	windowHandle = window;
-
 	if (mode == MODE_RELATIVE)
 	{
+		Rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
+		Rid.usUsage = HID_USAGE_GENERIC_MOUSE;
+		Rid.dwFlags = RIDEV_NOLEGACY | RIDEV_CAPTUREMOUSE; //adds mouse and also ignores legacy mouse messages
+		Rid.hwndTarget = window;
+		windowHandle = window;
 		if (RegisterRawInputDevices(&Rid, 1u, sizeof(RAWINPUTDEVICE)) == FALSE)
 		{
 			OutputDebugString("Error registering raw input device!");

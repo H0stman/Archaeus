@@ -1,9 +1,7 @@
 #pragma once
-#include <Renderer.h>
-#include <Camera.h>
-
-
-
+#include "Renderer.h"
+#include "Camera.h"
+#include "Clock.h"
 
 
 ///@brief Initializes the engine.
