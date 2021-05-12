@@ -15,9 +15,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Initialize(wndhndl);
 
 	MSG msg = {0};
-
 	BOOL run = TRUE;
-	
 
 	while (run) 
 	{

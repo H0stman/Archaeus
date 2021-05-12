@@ -68,6 +68,8 @@
       "winpackagefamily.h": "c",
       "sdkddkver.h": "c",
       "keyboard.h": "c",
-      "*.rh": "c"
+      "*.rh": "c",
+      "d3d11_4.h": "c",
+      "imm.h": "c"
    },
 }

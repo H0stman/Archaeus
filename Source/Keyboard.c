@@ -4,28 +4,27 @@ struct KeyboardState keystate;
 
 void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	///TODO: Handle keyboard input properly.
-	if(message == WM_KEYDOWN)
+	if (message == WM_KEYDOWN)
 	{
 		switch (wParam)
 		{
 		case 0x57: //W key.
-			keystate.w = TRUE;
+			keystate.w = KEY_DOWN;
 			break;
 		case 0x41: //A key.
-			keystate.a = TRUE;
+			keystate.a = KEY_DOWN;
 			break;
 		case 0x53: //S key.
-			keystate.s = TRUE;
+			keystate.s = KEY_DOWN;
 			break;
 		case 0x44: //D key.
-			keystate.d = TRUE;
+			keystate.d = KEY_DOWN;
 			break;
 		case VK_SHIFT:
-			keystate.lshift = TRUE;
+			keystate.lshift = KEY_DOWN;
 			break;
 		case VK_SPACE:
-			keystate.space = TRUE;
+			keystate.space = KEY_DOWN;
 			break;
 		default:
 			DefWindowProc(hndl, message, wParam, lParam);
@@ -37,22 +36,22 @@ void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lPara
 		switch (wParam)
 		{
 		case 0x57: //W key.
-			keystate.w = FALSE;
+			keystate.w = KEY_RELEASED;
 			break;
 		case 0x41: //A key.
-			keystate.a = FALSE;
+			keystate.a = KEY_RELEASED;
 			break;
 		case 0x53: //S key.
-			keystate.s = FALSE;
+			keystate.s = KEY_RELEASED;
 			break;
 		case 0x44: //D key.
-			keystate.d = FALSE;
+			keystate.d = KEY_RELEASED;
 			break;
 		case VK_SHIFT:
-			keystate.lshift = FALSE;
+			keystate.lshift = KEY_RELEASED;
 			break;
 		case VK_SPACE:
-			keystate.space = FALSE;
+			keystate.space = KEY_RELEASED;
 			break;
 		default:
 			DefWindowProc(hndl, message, wParam, lParam);
@@ -61,4 +60,14 @@ void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lPara
 	}
 	else
 		DefWindowProc(hndl, message, wParam, lParam);
+}
+
+void ResetKeyboardState(void)
+{
+	keystate.w = KEY_UP;
+	keystate.a = KEY_UP;
+	keystate.s = KEY_UP;
+	keystate.d = KEY_UP;
+	keystate.lshift = KEY_UP;
+	keystate.space = KEY_UP;
 }

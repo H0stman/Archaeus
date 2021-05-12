@@ -27,7 +27,7 @@ struct State
    Mode positionMode;
 };
 
-
 void ProcessMouseMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 void SetMouseMode(Mode mode);
 void InitMouse(HWND window, Mode mode);
+void ResetMouseState(void);

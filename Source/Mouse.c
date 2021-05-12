@@ -116,3 +116,8 @@ void InitMouse(HWND window, Mode mode)
 	}
 	mousestate.positionMode = mode;
 }
+
+void ResetMouseState(void)
+{
+	mousestate.x = mousestate.y = 0;
+}

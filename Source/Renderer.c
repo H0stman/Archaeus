@@ -12,7 +12,7 @@ ID3D11PixelShader *pixel_shader_ptr = NULL;
 ID3DBlob *vs_blob_ptr = NULL, *ps_blob_ptr = NULL, *error_blob = NULL;
 
 
-void D3D11Initialize(HWND windowhandle)
+void D3D11Initialize(HWND hndl)
 {
 	DXGI_SWAP_CHAIN_DESC swap_chain_descr =
 	{
@@ -24,7 +24,7 @@ void D3D11Initialize(HWND windowhandle)
 		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
 		.BufferCount = 2,
 		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
-		.OutputWindow = windowhandle,
+		.OutputWindow = hndl,
 		.Windowed = TRUE
 	};
 
@@ -161,7 +161,7 @@ void D3D11Initialize(HWND windowhandle)
 	}
 
 	RECT winRect;
-	GetClientRect(windowhandle, &winRect);
+	GetClientRect(hndl, &winRect);
 	D3D11_VIEWPORT viewport = 
 	{
 		.TopLeftX = 0.0f,

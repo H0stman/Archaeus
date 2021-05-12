@@ -5,7 +5,7 @@ INCLUDES = Includes\\
 BUILD = Build\\
 BIN = Bin\\
 DEBUG = Debug\\
-EXECUTABLE = $(BIN)CirectX.exe
+EXECUTABLE = $(BIN)Archaeus.exe
 SOURCE = Source\\
 
 ## Compile command variables

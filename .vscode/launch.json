@@ -8,7 +8,7 @@
          "name": "Debug",
          "type": "cppvsdbg",
          "request": "launch",
-         "program": "${workspaceFolder}/Bin/CirectX.exe",
+         "program": "${workspaceFolder}/Bin/Archaeus.exe",
          "args": [],
          "stopAtEntry": false,
          "cwd": "${workspaceFolder}/Bin",

@@ -21,7 +21,7 @@ HWND MakeWindow(HINSTANCE hInstance)
 	return CreateWindowEx(
 		 0,											// Optional window styles.
 		 "CirectX winow class",					// Window class
-		 "NanoGear",								// Window text
+		 "Archaeus",								// Window text
 		 WS_OVERLAPPEDWINDOW | WS_VISIBLE, 	// Window style
 
 		 // Size and position
@@ -36,7 +36,6 @@ HWND MakeWindow(HINSTANCE hInstance)
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	
 	switch (uMsg)
 	{
 	case WM_DESTROY:

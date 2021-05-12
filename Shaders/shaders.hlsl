@@ -7,7 +7,6 @@ cbuffer matrices : register(b0)
 	matrix projection;
 }
 
-
 /* vertex attributes go here to input to the vertex shader */
 struct vs_in 
 {

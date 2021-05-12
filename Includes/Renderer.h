@@ -19,5 +19,5 @@ ID3D11PixelShader *pixel_shader_ptr;
 ID3DBlob *vs_blob_ptr, *ps_blob_ptr, *error_blob;
 
 
-void D3D11Initialize(HWND windowhandle);
+void D3D11Initialize(HWND hndl);
 void Release(void);
