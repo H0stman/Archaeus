@@ -4,14 +4,30 @@
       {
          "label": "Build debug",
          "type": "shell",
-         "command": "nmake debug=1 -NOLOGO",
+         "command": "nmake",
+         "args": [
+            "debug=1",
+            "-NOLOGO"
+         ],
          "group": {
             "kind": "build",
             "isDefault": true
          },
          "problemMatcher": {
             "base": "$msCompile",
-            "fileLocation":"absolute"
+            "fileLocation": "absolute"
+         }
+      },
+      {
+         "label": "Build release",
+         "type": "shell",
+         "command": "nmake",
+         "args": [
+            "-NOLOGO"
+         ],
+         "problemMatcher": {
+            "base": "$msCompile",
+            "fileLocation": "absolute"
          }
       }
    ]
