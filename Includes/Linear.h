@@ -11,7 +11,6 @@
  ///TODO: Add comments and cleanup.
 
 #pragma once
-#define _USE_MATH_DEFINES
 #pragma warning(push, 0)
 #include <immintrin.h>
 #include <math.h>
@@ -85,25 +84,59 @@ Mat4 vectorcall LookAt(Vec4 eye, Vec4 focus, Vec4 up);
 /// @returns The look to view matrix.
 Mat4 vectorcall LookTo(Vec4 eye, Vec4 direction, Vec4 up);
 
+/// @brief Computes a perspective matrix based on a field of view and an aspect ratio.
+/// @param fov field of view angle in radians.
+/// @param aspectratio The relation between the width and the height of the viewport.
+/// @param nearplane The distance from the camera to the nearplane.
+/// @param farplane The distance from the camera to the farplane.
+/// @returns The perspective matrix.
 Mat4 Persp(float fov, float aspectratio, float nearplane, float farplane);
 
+/// @brief Creates a rotation matrix which makes whetever is multiplied by it rotate around the x-axis.
+/// @param angle The angle of rotation in radians.
+/// @returns The rotation matrix.
 Mat4 RotX(float angle);
 
+/// @brief Creates a rotation matrix which makes whetever is multiplied by it rotate around the y-axis.
+/// @param angle The angle of rotation in radians.
+/// @returns The rotation matrix.
 Mat4 RotY(float angle);
 
+/// @brief Creates a rotation matrix which makes whetever is multiplied by it rotate around the z-axis.
+/// @param angle The angle of rotation in radians.
+/// @returns The rotation matrix.
 Mat4 RotZ(float angle);
 
+/// @brief Creates a rotation matrix which makes whetever is multiplied by it rotate around an arbitrary axis.
+/// @param normaxis The axis of rotation.
+/// @param angle The angle of rotation in radians.
+/// @returns The rotation matrix.
 Mat4 vectorcall RotNorm(Vec4 normaxis, float angle);
 
+/// @brief Creates a rotation matrix which makes whetever is multiplied by it rotate around an arbitrary axis. The axis vector is normilized.
+/// @param axis The axis of rotation.
+/// @param angle The angle of rotation in radians.
+/// @returns The rotation matrix.
 Mat4 vectorcall RotAxis(Vec4 axis, float angle);
 
+/// @returns The identity matrix {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}.
 Mat4 Identity(void);
 
+/// @brief Normilizes a vector.
+/// @param a The vector to be normilized.
+/// @return The normilzed version of vector a.
 Vec4 vectorcall VecNorm(Vec4 a);
 
+/// @brief Normilizes a vector based on an approximation function which favours computational speed. The maximum relative error for this approximation is less than 1.5*2^-12.
+/// @param a The vector to be normilized.
+/// @returns The approximated normilized version of vector a.
 Vec4 vectorcall VecNormEst(Vec4 a);
 
+/// @brief Negates a vector. Flips the signs of each component in the vector.
+/// @param a The vector to be negated.
+/// @return The negated version of vector a.
 Vec4 vectorcall VecNeg(Vec4 a);
+
 
 Vec4 vectorcall VecSelect(Vec4 a, Vec4 b, Vec4 control);
 
@@ -506,7 +539,7 @@ inline Vec4 VecSelectCtrl(unsigned int index0, unsigned int index1, unsigned int
 	// x=Index0,y=Index1,z=Index2,w=Index3
 	__m128i temp = _mm_set_epi32((int)index3, (int)index2, (int)index1, (int)index0);
 	// Any non-zero entries become 0xFFFFFFFF else 0
-	__m128i zero = { 0.0f, 0.0f, 0.0f, 0.0f };
+	__m128i zero = { (int)0.0f, (int)0.0f, (int)0.0f, (int)0.0f };
 	temp = _mm_cmpgt_epi32(temp, zero);
 	return _mm_castsi128_ps(temp);
 }
@@ -612,9 +645,9 @@ inline void ScalarSinCos(float* sin, float* cos, float value)
 	// Map value to y in [-pi,pi], x = 2*pi*quotient + remainder.
 	float quotient = LN_1DIV2PI * value;
 	if (value >= 0.0f)
-		quotient = (int)(quotient + 0.5f);
+		quotient = floorf(quotient + 0.5f);
 	else
-		quotient = (int)(quotient - 0.5f);
+		quotient = floorf(quotient - 0.5f);
 
 	float y = value - 2 * LN_PI * quotient;
 

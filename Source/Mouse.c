@@ -2,10 +2,10 @@
 
 struct State mousestate;
 
-HWND windowHandle;
-RAWINPUTDEVICE Rid;
-BYTE lpb[sizeof(RAWINPUT)];
-UINT dwSize = sizeof(RAWINPUT);
+static HWND windowHandle;
+static RAWINPUTDEVICE Rid;
+static BYTE lpb[sizeof(RAWINPUT)];
+static UINT dwSize = sizeof(RAWINPUT);
 
 void ProcessMouseMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

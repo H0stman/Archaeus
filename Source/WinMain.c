@@ -11,7 +11,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	HWND wndhndl = MakeWindow(hInstance);
 
-	InitMouse(wndhndl, MODE_RELATIVE);
+	
 	Initialize(wndhndl);
 
 	MSG msg = {0};

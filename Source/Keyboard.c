@@ -1,9 +1,37 @@
 #include "Keyboard.h"
 
+static RAWINPUTDEVICE Rid;
+static BYTE lpb[sizeof(RAWINPUT)];
+static UINT dwSize = sizeof(RAWINPUT);
+
 struct KeyboardState keystate;
 
 void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	// switch (message)
+	// {
+	// case WM_INPUT:
+	// {
+	// 	GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+	// 	RAWINPUT* raw = (RAWINPUT*)lpb;
+	// 	if (raw->header.dwType == RIM_TYPEKEYBOARD)
+	// 	{
+	// 		//_RPT0(0, "Key!");
+	// 		_RPT5(0," Kbd: make=%04x Flags:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n",
+	// 			raw->data.keyboard.MakeCode,
+	// 			raw->data.keyboard.Flags,
+	// 			raw->data.keyboard.ExtraInformation,
+	// 			raw->data.keyboard.Message,
+	// 			raw->data.keyboard.VKey);
+	// 	}
+	// 	break;
+	// }
+	// 	break;
+
+	// default:
+	// 	DefWindowProc(hndl, message, wParam, lParam);
+	// 	break;
+	// }
 	if (message == WM_KEYDOWN)
 	{
 		switch (wParam)
@@ -60,6 +88,21 @@ void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lPara
 	}
 	else
 		DefWindowProc(hndl, message, wParam, lParam);
+}
+
+void InitKeyboard(HWND window)
+{
+	Rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
+	Rid.usUsage = HID_USAGE_GENERIC_KEYBOARD;
+	Rid.dwFlags = RIDEV_NOLEGACY;
+	Rid.hwndTarget = window;
+
+	if (RegisterRawInputDevices(&Rid, 1u, sizeof(RAWINPUTDEVICE)) == FALSE)
+	{
+		OutputDebugString("Error registering raw input device!");
+		return;
+	}
+
 }
 
 void ResetKeyboardState(void)

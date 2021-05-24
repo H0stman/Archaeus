@@ -10,6 +10,8 @@ Mat4 matrices[3];
 void Initialize(HWND windowhandle)
 {
    D3D11Initialize(windowhandle);
+   InitMouse(windowhandle, MODE_RELATIVE);
+   //InitKeyboard(windowhandle);
    InitializeCamera();
    StartClock();
 
@@ -38,7 +40,6 @@ void Update(void)
    UpdateCamera((float)DeltaTime());
    UpdateClock();
    ResetMouseState();
-   //ResetKeyboardState();
    HRESULT hr = ID3D11DeviceContext_Map(device_context_ptr, (ID3D11Resource*)matbuff, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &updatemat);
    HandleHR(hr);
    Mat4 *mat = (Mat4*)updatemat.pData;
@@ -47,7 +48,6 @@ void Update(void)
    mat[2] = camera.projection;
    ID3D11DeviceContext_Unmap(device_context_ptr, (ID3D11Resource*)matbuff, 0u);
    ID3D11DeviceContext_VSSetConstantBuffers(device_context_ptr, 0u, 1u, &matbuff);
-   
 }
 
 void Render(void)
