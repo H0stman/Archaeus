@@ -13,9 +13,7 @@ CFLAGS =-c -permissive- -std:c17 -TC -W4 -nologo -IIncludes -D"COBJMACROS" -D"WI
 LFLAGS =-nologo -SUBSYSTEM:WINDOWS $(LIBS)
 LIBS =User32.lib d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib Winmm.lib
 
-all: $(EXECUTABLE)
-
-$(EXECUTABLE):
+all:
 !IF DEFINED(debug)
    $(CC) $(CFLAGS) -MP -Zi -MTd -Od -FC -D"DEBUG" $(SOURCE)*.c -Fo:$(BUILD)
    LINK $(LFLAGS) -DEBUG:FASTLINK $(BUILD)*.obj -OUT:$(EXECUTABLE)
@@ -26,5 +24,5 @@ $(EXECUTABLE):
    @echo Build complete!
 
 clean:
-   -del $(BIN)*.pdb $(BIN)*.exe $(BUILD)*.obj $(DEBUG)*.pdb
+   -del $(BIN)*.ilk $(BIN)*.pdb $(BIN)*.exe $(BUILD)*.obj $(DEBUG)*.pdb
    @echo Clean complete!
