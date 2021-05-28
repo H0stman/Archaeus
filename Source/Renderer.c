@@ -1,15 +1,17 @@
 #include <Renderer.h>
 
-ID3D11Device *device_ptr = NULL;
-ID3D11DeviceContext *device_context_ptr = NULL;
-IDXGISwapChain *swap_chain_ptr = NULL;
-ID3D11RenderTargetView *render_target_view_ptr = NULL;
-ID3D11Texture2D *framebuffer = NULL;
-ID3D11InputLayout *input_layout_ptr = NULL;
-ID3D11Buffer *vertex_buffer_ptr = NULL;
-ID3D11VertexShader *vertex_shader_ptr = NULL;
-ID3D11PixelShader *pixel_shader_ptr = NULL;
-ID3DBlob *vs_blob_ptr = NULL, *ps_blob_ptr = NULL, *error_blob = NULL;
+ID3D11Device* device_ptr = NULL;
+ID3D11DeviceContext* device_context_ptr = NULL;
+IDXGISwapChain* swap_chain_ptr = NULL;
+ID3D11RenderTargetView* render_target_view_ptr = NULL;
+ID3D11Texture2D* framebuffer = NULL;
+ID3D11InputLayout* input_layout_ptr = NULL;
+ID3D11Buffer* vertexbuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], * index = NULL;
+UINT StartSlot = 0, NumBuffers = 0;
+UINT strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], offsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+ID3D11VertexShader* vertex_shader_ptr = NULL;
+ID3D11PixelShader* pixel_shader_ptr = NULL;
+ID3DBlob* vs_blob_ptr = NULL, * ps_blob_ptr = NULL, * error_blob = NULL;
 
 
 void D3D11Initialize(HWND hndl)
@@ -52,7 +54,7 @@ void D3D11Initialize(HWND hndl)
 	hr = IDXGISwapChain_GetBuffer(swap_chain_ptr, 0u, &IID_ID3D11Texture2D, &framebuffer);
 	assert(SUCCEEDED(hr));
 
-	hr = ID3D11Device_CreateRenderTargetView(device_ptr, (ID3D11Resource *)framebuffer, NULL, &render_target_view_ptr);
+	hr = ID3D11Device_CreateRenderTargetView(device_ptr, (ID3D11Resource*)framebuffer, NULL, &render_target_view_ptr);
 	assert(SUCCEEDED(hr));
 	ID3D11Texture2D_Release(framebuffer);
 
@@ -60,11 +62,11 @@ void D3D11Initialize(HWND hndl)
 #if defined(DEBUG) || defined(_DEBUG)
 	flags |= D3DCOMPILE_DEBUG; // add more debug output
 #endif
-	
+
 
 	// COMPILE VERTEX SHADER
 	hr = D3DCompileFromFile(
-		L"../Shaders/shaders.hlsl",
+		L"../Shaders/vertex.hlsl",
 		NULL,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"vs_main",
@@ -78,7 +80,7 @@ void D3D11Initialize(HWND hndl)
 	{
 		if (error_blob)
 		{
-			OutputDebugStringA((char *)ID3D10Blob_GetBufferPointer(error_blob));
+			OutputDebugStringA((char*)ID3D10Blob_GetBufferPointer(error_blob));
 			ID3D10Blob_Release(error_blob);
 		}
 		if (vs_blob_ptr)
@@ -88,7 +90,7 @@ void D3D11Initialize(HWND hndl)
 
 	// COMPILE PIXEL SHADER
 	hr = D3DCompileFromFile(
-		L"../Shaders/shaders.hlsl",
+		L"../Shaders/pixel.hlsl",
 		NULL,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"ps_main",
@@ -102,7 +104,7 @@ void D3D11Initialize(HWND hndl)
 	{
 		if (error_blob)
 		{
-			OutputDebugStringA((char *)ID3D10Blob_GetBufferPointer(error_blob));
+			OutputDebugStringA((char*)ID3D10Blob_GetBufferPointer(error_blob));
 			ID3D10Blob_Release(error_blob);
 		}
 		if (ps_blob_ptr)
@@ -124,45 +126,81 @@ void D3D11Initialize(HWND hndl)
 
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
 		{"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		/*
-  		{ "COL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  		{ "NOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  		{ "TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  		*/
+		{ "COL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		/*{ "NOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		*/
 	};
 
 	hr = ID3D11Device_CreateInputLayout(device_ptr, inputElementDesc, ARRAYSIZE(inputElementDesc), ID3D10Blob_GetBufferPointer(vs_blob_ptr), ID3D10Blob_GetBufferSize(vs_blob_ptr), &input_layout_ptr);
 	assert(SUCCEEDED(hr));
 
 	float vertex_data_array[] = {
-		0.0f, 0.5f, 0.0f,		// point at top
-		0.5f, -0.5f, 0.0f,	// point at bottom-right
-		-0.5f, -0.5f, 0.0f, 	// point at bottom-left
+		1.0f,1.0f,-1.0f, 	0.0f, 0.0f, 1.0f,   // Vertex 0.
+		-1.0f,1.0f,-1.0f, 0.0f, 1.0f, 0.0f,   // Vertex 1.
+		-1.0f,1.0f,1.0f,  1.0f, 0.0f, 0.0f,   // And so on.
+		1.0f,1.0f,1.0f,	0.0f, 1.0f, 1.0f,
+		1.0f,-1.0f,-1.0f,	1.0f, 0.0f, 1.0f,
+		-1.0f,-1.0f,-1.0f,1.0f, 1.0f, 1.0f,
+		-1.0f,-1.0f,1.0f,	0.0f, 0.0f, 0.0f,
+		1.0f,-1.0f,1.0f,	1.0f, 1.0f, 0.0f
 	};
-	UINT vertex_stride = 3 * sizeof(float);
-	UINT vertex_offset = 0;
-	//UINT vertex_count = 3;
-	
+
+	strides[0] = 6 * sizeof(float);
+	offsets[0] = 0;
+
 	{
-		D3D11_BUFFER_DESC vertex_buff_descr = 
+		D3D11_BUFFER_DESC vertex_buff_descr =
 		{
 			.ByteWidth = sizeof(vertex_data_array),
 			.Usage = D3D11_USAGE_IMMUTABLE,
 			.BindFlags = D3D11_BIND_VERTEX_BUFFER
 		};
 
-		D3D11_SUBRESOURCE_DATA sr_data = 
+		D3D11_SUBRESOURCE_DATA sr_data =
 		{
 			.pSysMem = vertex_data_array
 		};
 
-		hr = ID3D11Device_CreateBuffer(device_ptr,&vertex_buff_descr,&sr_data, &vertex_buffer_ptr);
+		hr = ID3D11Device_CreateBuffer(device_ptr, &vertex_buff_descr, &sr_data, &vertexbuffers[0]);
+		NumBuffers++;
 		assert(SUCCEEDED(hr));
 	}
 
+	int index_data_array[] = {
+		0u,1u,2u,                // Face 0 has three vertices.
+		0u,2u,3u,                // And so on.
+		0u,5u,1u,
+		0u,4u,5u,
+		1u,5u,6u,
+		1u,6u,2u,
+		2u,6u,7u,
+		2u,7u,3u,
+		3u,7u,4u,
+		3u,4u,0u,
+		4u,7u,6u,
+		4u,6u,5u
+	};
+
+
+	D3D11_BUFFER_DESC index_buff_descr = {
+		.ByteWidth = sizeof(index_data_array),
+		.Usage = D3D11_USAGE_IMMUTABLE,
+		.BindFlags = D3D11_BIND_INDEX_BUFFER
+	};
+
+	D3D11_SUBRESOURCE_DATA sr_data =
+	{
+		.pSysMem = index_data_array
+	};
+
+	hr = ID3D11Device_CreateBuffer(device_ptr, &index_buff_descr, &sr_data, &index);
+	assert(SUCCEEDED(hr));
+
+
 	RECT winRect;
 	GetClientRect(hndl, &winRect);
-	D3D11_VIEWPORT viewport = 
+	D3D11_VIEWPORT viewport =
 	{
 		.TopLeftX = 0.0f,
 		.TopLeftY = 0.0f,
@@ -172,10 +210,10 @@ void D3D11Initialize(HWND hndl)
 		.MaxDepth = 1.0f
 	};
 	ID3D11DeviceContext_RSSetViewports(device_context_ptr, 1u, &viewport);
-	
-	ID3D11DeviceContext_IASetPrimitiveTopology(device_context_ptr, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	ID3D11DeviceContext_IASetInputLayout(device_context_ptr,input_layout_ptr);
-	ID3D11DeviceContext_IASetVertexBuffers(device_context_ptr, 0, 1, &vertex_buffer_ptr, &vertex_stride, &vertex_offset);
+	ID3D11DeviceContext_IASetIndexBuffer(device_context_ptr, index, DXGI_FORMAT_R32_UINT, 0u);
+	ID3D11DeviceContext_IASetPrimitiveTopology(device_context_ptr, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ID3D11DeviceContext_IASetInputLayout(device_context_ptr, input_layout_ptr);
+	ID3D11DeviceContext_IASetVertexBuffers(device_context_ptr, StartSlot, NumBuffers, vertexbuffers, strides, offsets);
 
 	ID3D11DeviceContext_VSSetShader(device_context_ptr, vertex_shader_ptr, NULL, 0u);
 	ID3D11DeviceContext_PSSetShader(device_context_ptr, pixel_shader_ptr, NULL, 0u);
@@ -191,7 +229,7 @@ void Release(void)
 	ID3D10Blob_Release(vs_blob_ptr);
 	ID3D10Blob_Release(ps_blob_ptr);
 	ID3D11InputLayout_Release(input_layout_ptr);
-	ID3D11Buffer_Release(vertex_buffer_ptr);
+	ID3D11Buffer_Release(vertexbuffers[0]);
 	ID3D11DeviceContext_Release(device_context_ptr);
 	ID3D11Device_Release(device_ptr);
 	IDXGISwapChain_Release(swap_chain_ptr);

@@ -54,6 +54,7 @@ void Render(void)
 {
    ID3D11DeviceContext_ClearRenderTargetView(device_context_ptr, render_target_view_ptr, background_colour);
    ID3D11DeviceContext_OMSetRenderTargets(device_context_ptr, 1u, &render_target_view_ptr, NULL);
-   ID3D11DeviceContext_Draw(device_context_ptr, 3u, 0u);
+   //ID3D11DeviceContext_Draw(device_context_ptr, 3u, 0u);
+   ID3D11DeviceContext_DrawIndexed(device_context_ptr, 36u, 0u, 0u);
    IDXGISwapChain_Present(swap_chain_ptr, 1u, 0u);
 }

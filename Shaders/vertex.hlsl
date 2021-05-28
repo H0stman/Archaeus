@@ -11,12 +11,14 @@ cbuffer matrices : register(b0)
 struct vs_in 
 {
    float3 position_local : POS;
+	float3 colour : COL;
 };
 
 /* outputs from vertex shader go here. can be interpolated to pixel shader */
 struct vs_out 
 {
    vector position_clip : SV_POSITION; // required output of VS
+	float3 colour : COL;
 };
 
 vs_out vs_main(vs_in input) 
@@ -26,10 +28,7 @@ vs_out vs_main(vs_in input)
 	temp = mul(temp, transpose(projection));
   	vs_out output = (vs_out)0; // zero the memory first
   	output.position_clip = temp;
+	output.colour = input.colour;
   	return output;
 }
 
-vector ps_main(vs_out input) : SV_TARGET 
-{
-	return vector(input.position_clip.x / 1424, input.position_clip.y / 720, input.position_clip.z, 1.0); // must return an RGBA colour
-}

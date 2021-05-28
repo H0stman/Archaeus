@@ -16,19 +16,10 @@ LIBS =User32.lib d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib Winmm.lib
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(BUILD)*.obj
-!IF DEFINED(debug)
    LINK $(LFLAGS) -DEBUG:FASTLINK $** -OUT:$@
-!ELSE
-   LINK $(LFLAGS) $** -OUT:$@
-!ENDIF
-   @echo Build complete!
 
 {Source\}.c{$(BUILD)}.obj::
-!IF DEFINED(debug)
    $(CC) $(CFLAGS) -Zi -MTd -Od -FC -D"DEBUG" $< -Fo:$(BUILD)
-!ELSE
-   $(CC) $(CFLAGS) -O2 -D"NDEBUG" $< -Fo:$(BUILD)
-!ENDIF
 
 pard:
    $(CC) $(CFLAGS) -MP -Zi -MTd -Od -FC -D"DEBUG" $(SOURCE)*.c -Fo:$(BUILD)
