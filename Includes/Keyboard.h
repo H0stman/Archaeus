@@ -23,7 +23,7 @@ struct KeyboardState
    KeyState d;
    KeyState r;
    KeyState space;
-   KeyState lshift;
+   KeyState shift;
 };
 
 void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lParam);

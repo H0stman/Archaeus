@@ -1,5 +1,7 @@
 #include <Window.h>
 
+extern struct KeyboardState keystate;
+
 HWND MakeWindow(HINSTANCE hInstance)
 {
 	// Register the window class.
@@ -19,49 +21,49 @@ HWND MakeWindow(HINSTANCE hInstance)
 	// Create the window.
 
 	return CreateWindowEx(
-		 0,											// Optional window styles.
-		 "CirectX winow class",					// Window class
-		 "Archaeus",								// Window text
-		 WS_OVERLAPPEDWINDOW | WS_VISIBLE, 	// Window style
+		0,												// Optional window styles.
+		"CirectX winow class",					// Window class
+		"Archaeus",									// Window text
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE,	// Window style
 
-		 // Size and position
-		 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		// Size and position
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 
-		 NULL,		// Parent window
-		 NULL,		// Menu
-		 hInstance, // Instance handle
-		 NULL			// Additional application data
+		NULL,			// Parent window
+		NULL,			// Menu
+		hInstance, 	// Instance handle
+		NULL			// Additional application data
 	);
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	ResetKeyboardState();
 	switch (uMsg)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
 	case WM_CLOSE:
-	{
-		if (MessageBox(hwnd, "Quit?", "Exit", MB_YESNO) == IDYES)
-			DestroyWindow(hwnd);
-		else
-			return 0;
-	}
+		{
+			if (MessageBox(hwnd, "Quit?", "Exit", MB_YESNO) == IDYES)
+				DestroyWindow(hwnd);
+			else
+				return 0;
+		}
 	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-		EndPaint(hwnd, &ps);
-	}
+		{
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
+			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+			EndPaint(hwnd, &ps);
+		}
 	case WM_ACTIVATEAPP:
 		ProcessMouseMessage(hwnd, uMsg, wParam, lParam);
-		ProcessKeyboardMessage(hwnd, uMsg,wParam,lParam);
+		ProcessKeyboardMessage(hwnd, uMsg, wParam, lParam);
 		break;
 
 	case WM_INPUT:
-		ProcessKeyboardMessage(hwnd, uMsg, wParam, lParam);
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:

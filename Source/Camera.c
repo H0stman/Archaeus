@@ -27,7 +27,7 @@ void UpdateCamera(float delta)
 			camera.position = VecSub(camera.position, VecScale(Cross(camera.direction, UP), speed * delta));
 		if (keystate.space == KEY_DOWN)
 			camera.position = VecAdd(camera.position, VecScale(UP, speed * delta));
-		if (keystate.lshift == KEY_DOWN)
+		if (keystate.shift == KEY_DOWN)
 			camera.position = VecSub(camera.position, VecScale(UP, speed * delta));
 	}
 	camera.view = LookTo(camera.position, camera.direction, UP);
@@ -35,7 +35,7 @@ void UpdateCamera(float delta)
 
 void InitializeCamera(void)
 {
-	camera.position = (Vec4){ 0.0f,0.0f,-1.0f,1.0f };
+	camera.position = (Vec4){ 0.0f,0.0f,-5.0f,0.0f };
 	camera.focus = (Vec4){ 0.0f,0.0f,0.0f,1.0f };
 	camera.direction = (Vec4){ 0.0f,0.0f,1.0f,0.0f };
 

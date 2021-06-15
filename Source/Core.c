@@ -6,12 +6,12 @@ ID3D11Buffer* matbuff;
 D3D11_SUBRESOURCE_DATA data;
 D3D11_MAPPED_SUBRESOURCE updatemat;
 Mat4 matrices[3];
+static float angle = 0.0f;
 
 void Initialize(HWND windowhandle)
 {
    D3D11Initialize(windowhandle);
    InitMouse(windowhandle, MODE_RELATIVE);
-   //InitKeyboard(windowhandle);
    InitializeCamera();
    StartClock();
 
@@ -40,10 +40,11 @@ void Update(void)
    UpdateCamera((float)DeltaTime());
    UpdateClock();
    ResetMouseState();
+
    HRESULT hr = ID3D11DeviceContext_Map(device_context_ptr, (ID3D11Resource*)matbuff, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &updatemat);
    HandleHR(hr);
    Mat4 *mat = (Mat4*)updatemat.pData;
-   mat[0] = Identity();
+   mat[0] = Mul(RotX(angle++ / 100), RotY(angle++ / 100));
    mat[1] = camera.view;
    mat[2] = camera.projection;
    ID3D11DeviceContext_Unmap(device_context_ptr, (ID3D11Resource*)matbuff, 0u);
@@ -54,7 +55,6 @@ void Render(void)
 {
    ID3D11DeviceContext_ClearRenderTargetView(device_context_ptr, render_target_view_ptr, background_colour);
    ID3D11DeviceContext_OMSetRenderTargets(device_context_ptr, 1u, &render_target_view_ptr, NULL);
-   //ID3D11DeviceContext_Draw(device_context_ptr, 3u, 0u);
    ID3D11DeviceContext_DrawIndexed(device_context_ptr, 36u, 0u, 0u);
    IDXGISwapChain_Present(swap_chain_ptr, 1u, 0u);
 }

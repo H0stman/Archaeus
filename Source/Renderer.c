@@ -6,7 +6,7 @@ IDXGISwapChain* swap_chain_ptr = NULL;
 ID3D11RenderTargetView* render_target_view_ptr = NULL;
 ID3D11Texture2D* framebuffer = NULL;
 ID3D11InputLayout* input_layout_ptr = NULL;
-ID3D11Buffer* vertexbuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], * index = NULL;
+ID3D11Buffer* vertexbuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], *index = NULL;
 UINT StartSlot = 0, NumBuffers = 0;
 UINT strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], offsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 ID3D11VertexShader* vertex_shader_ptr = NULL;
@@ -136,14 +136,14 @@ void D3D11Initialize(HWND hndl)
 	assert(SUCCEEDED(hr));
 
 	float vertex_data_array[] = {
-		1.0f,1.0f,-1.0f, 	0.0f, 0.0f, 1.0f,   // Vertex 0.
-		-1.0f,1.0f,-1.0f, 0.0f, 1.0f, 0.0f,   // Vertex 1.
-		-1.0f,1.0f,1.0f,  1.0f, 0.0f, 0.0f,   // And so on.
+		1.0f,1.0f,-1.0f, 	0.0f, 0.0f, 0.0f,   // Vertex 0.
+		-1.0f,1.0f,-1.0f, 0.0f, 0.0f, 1.0f,   // Vertex 1.
+		-1.0f,1.0f,1.0f,  0.0f, 1.0f, 0.0f,   // And so on.
 		1.0f,1.0f,1.0f,	0.0f, 1.0f, 1.0f,
-		1.0f,-1.0f,-1.0f,	1.0f, 0.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,1.0f, 1.0f, 1.0f,
-		-1.0f,-1.0f,1.0f,	0.0f, 0.0f, 0.0f,
-		1.0f,-1.0f,1.0f,	1.0f, 1.0f, 0.0f
+		1.0f,-1.0f,-1.0f,	1.0f, 0.0f, 0.0f,
+		-1.0f,-1.0f,-1.0f,1.0f, 0.0f, 1.0f,
+		-1.0f,-1.0f,1.0f,	1.0f, 1.0f, 0.0f,
+		1.0f,-1.0f,1.0f,	1.0f, 1.0f, 1.0f
 	};
 
 	strides[0] = 6 * sizeof(float);
@@ -222,6 +222,8 @@ void D3D11Initialize(HWND hndl)
 
 void Release(void)
 {
+	if(error_blob)
+		ID3D10Blob_Release(error_blob);
 	ID3D11RenderTargetView_Release(render_target_view_ptr);
 	ID3D11VertexShader_Release(vertex_shader_ptr);
 	ID3D11PixelShader_Release(pixel_shader_ptr);
@@ -230,7 +232,8 @@ void Release(void)
 	ID3D10Blob_Release(ps_blob_ptr);
 	ID3D11InputLayout_Release(input_layout_ptr);
 	ID3D11Buffer_Release(vertexbuffers[0]);
+	ID3D11Buffer_Release(index);
 	ID3D11DeviceContext_Release(device_context_ptr);
-	ID3D11Device_Release(device_ptr);
 	IDXGISwapChain_Release(swap_chain_ptr);
+	ID3D11Device_Release(device_ptr);
 }

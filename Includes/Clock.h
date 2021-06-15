@@ -1,4 +1,4 @@
-//#include <time.h>
+#pragma once
 #pragma warning(push, 0)
 #include <windows.h>
 #pragma warning(pop);

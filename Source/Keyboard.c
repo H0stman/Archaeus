@@ -8,51 +8,27 @@ struct KeyboardState keystate;
 
 void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// switch (message)
-	// {
-	// case WM_INPUT:
-	// {
-	// 	GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
-	// 	RAWINPUT* raw = (RAWINPUT*)lpb;
-	// 	if (raw->header.dwType == RIM_TYPEKEYBOARD)
-	// 	{
-	// 		//_RPT0(0, "Key!");
-	// 		_RPT5(0," Kbd: make=%04x Flags:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n",
-	// 			raw->data.keyboard.MakeCode,
-	// 			raw->data.keyboard.Flags,
-	// 			raw->data.keyboard.ExtraInformation,
-	// 			raw->data.keyboard.Message,
-	// 			raw->data.keyboard.VKey);
-	// 	}
-	// 	break;
-	// }
-	// 	break;
-
-	// default:
-	// 	DefWindowProc(hndl, message, wParam, lParam);
-	// 	break;
-	// }
 	if (message == WM_KEYDOWN)
 	{
 		switch (wParam)
 		{
 		case 0x57: //W key.
-			keystate.w = KEY_DOWN;
+			keystate.w = keystate.w == KEY_DOWN ? KEY_DOWN : KEY_PRESSED;
 			break;
 		case 0x41: //A key.
-			keystate.a = KEY_DOWN;
+			keystate.a = keystate.a == KEY_DOWN ? KEY_DOWN : KEY_PRESSED;
 			break;
 		case 0x53: //S key.
-			keystate.s = KEY_DOWN;
+			keystate.s = keystate.s == KEY_DOWN ? KEY_DOWN : KEY_PRESSED;
 			break;
 		case 0x44: //D key.
-			keystate.d = KEY_DOWN;
+			keystate.d = keystate.d == KEY_DOWN ? KEY_DOWN : KEY_PRESSED;
 			break;
 		case VK_SHIFT:
-			keystate.lshift = KEY_DOWN;
+			keystate.shift = keystate.shift == KEY_DOWN ? KEY_DOWN : KEY_PRESSED;
 			break;
 		case VK_SPACE:
-			keystate.space = KEY_DOWN;
+			keystate.space = keystate.space == KEY_DOWN ? KEY_DOWN : KEY_PRESSED;
 			break;
 		default:
 			DefWindowProc(hndl, message, wParam, lParam);
@@ -76,7 +52,7 @@ void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lPara
 			keystate.d = KEY_RELEASED;
 			break;
 		case VK_SHIFT:
-			keystate.lshift = KEY_RELEASED;
+			keystate.shift = KEY_RELEASED;
 			break;
 		case VK_SPACE:
 			keystate.space = KEY_RELEASED;
@@ -107,10 +83,28 @@ void InitKeyboard(HWND window)
 
 void ResetKeyboardState(void)
 {
-	keystate.w = KEY_UP;
-	keystate.a = KEY_UP;
-	keystate.s = KEY_UP;
-	keystate.d = KEY_UP;
-	keystate.lshift = KEY_UP;
-	keystate.space = KEY_UP;
+	if (keystate.w == KEY_PRESSED)
+		keystate.w = KEY_DOWN;
+	if (keystate.a == KEY_PRESSED)
+		keystate.a = KEY_DOWN;
+	if (keystate.s == KEY_PRESSED)
+		keystate.s = KEY_DOWN;
+	if (keystate.d == KEY_PRESSED)
+		keystate.d = KEY_DOWN;
+	if (keystate.shift == KEY_PRESSED)
+		keystate.shift = KEY_DOWN;
+	if (keystate.space == KEY_PRESSED)
+		keystate.space = KEY_DOWN;
+	if (keystate.w == KEY_RELEASED)
+		keystate.w = KEY_UP;
+	if (keystate.a == KEY_RELEASED)
+		keystate.a = KEY_UP;
+	if (keystate.s == KEY_RELEASED)
+		keystate.s = KEY_UP;
+	if (keystate.d == KEY_RELEASED)
+		keystate.d = KEY_UP;
+	if (keystate.shift == KEY_RELEASED)
+		keystate.shift = KEY_UP;
+	if (keystate.space == KEY_RELEASED)
+		keystate.space = KEY_UP;
 }

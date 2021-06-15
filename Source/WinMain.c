@@ -1,7 +1,10 @@
 #include <Window.h>
 #include <Error.h>
 #include <Core.h>
-
+#pragma warning(push, 0)
+#define CGLTF_IMPLEMENTATION
+#include "cgltf.h"
+#pragma warning(pop);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -11,6 +14,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	HWND wndhndl = MakeWindow(hInstance);
 
+	cgltf_options options = { 0 };
+	cgltf_data* data = NULL;
+	cgltf_result result = cgltf_parse_file(&options, "..\\Resources\\Duck.gltf", &data);
+	data->buffers[1];
+	
+	if (result == cgltf_result_success)
+	{
+		/* TODO make awesome stuff */
+		cgltf_free(data);
+	}
 	
 	Initialize(wndhndl);
 
