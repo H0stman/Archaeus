@@ -1,4 +1,4 @@
-#include <Core.h>
+#include "Core.h"
 
 extern struct Camera camera;
 float background_colour[] = { 0.671f, 0.886f, 1.0f, 1.0f };
@@ -36,15 +36,15 @@ void Initialize(HWND windowhandle)
 
 void Update(void)
 {
-   
+
    UpdateCamera((float)DeltaTime());
    UpdateClock();
-   ResetMouseState();
+   ResetMouseDelta();
 
    HRESULT hr = ID3D11DeviceContext_Map(device_context_ptr, (ID3D11Resource*)matbuff, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &updatemat);
    HandleHR(hr);
-   Mat4 *mat = (Mat4*)updatemat.pData;
-   mat[0] = Mul(RotX(angle++ / 100), RotY(angle++ / 100));
+   Mat4* mat = (Mat4*)updatemat.pData;
+   mat[0] = Mul(RotZ(angle++ / 100), RotY(angle++ / 120));
    mat[1] = camera.view;
    mat[2] = camera.projection;
    ID3D11DeviceContext_Unmap(device_context_ptr, (ID3D11Resource*)matbuff, 0u);
@@ -54,7 +54,9 @@ void Update(void)
 void Render(void)
 {
    ID3D11DeviceContext_ClearRenderTargetView(device_context_ptr, render_target_view_ptr, background_colour);
-   ID3D11DeviceContext_OMSetRenderTargets(device_context_ptr, 1u, &render_target_view_ptr, NULL);
+   ID3D11DeviceContext_ClearDepthStencilView(device_context_ptr, depth_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+   ID3D11DeviceContext_OMSetDepthStencilState(device_context_ptr, depth_state, 0);
+   ID3D11DeviceContext_OMSetRenderTargets(device_context_ptr, 1u, &render_target_view_ptr, depth_view);
    ID3D11DeviceContext_DrawIndexed(device_context_ptr, 36u, 0u, 0u);
    IDXGISwapChain_Present(swap_chain_ptr, 1u, 0u);
 }

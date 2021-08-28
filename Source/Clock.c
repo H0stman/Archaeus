@@ -25,5 +25,4 @@ INT64 GetCount(void)
 void UpdateClock(void)
 {
    current = GetCount();
-   //dtacc += DeltaTime();
 }

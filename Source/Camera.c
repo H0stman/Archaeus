@@ -1,4 +1,4 @@
-#include <Camera.h>
+#include "Camera.h"
 
 struct Camera camera;
 
@@ -39,7 +39,7 @@ void InitializeCamera(void)
 	camera.focus = (Vec4){ 0.0f,0.0f,0.0f,1.0f };
 	camera.direction = (Vec4){ 0.0f,0.0f,1.0f,0.0f };
 
-	///NOTE: Transposing is required since the shaders handle matrices in column-major. It is now done in the shader.
+	///NOTE: Transposing is required since the shaders handle matrices in column-major. This is handled in the shader.
 	camera.view = LookTo(camera.position, camera.direction, UP);
 	camera.projection = Persp(toRad(70.0f), 1424.f / 728.f, 0.1f, 100.0f);
 }

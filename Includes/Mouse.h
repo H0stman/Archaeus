@@ -8,7 +8,7 @@
 #pragma warning(pop);
 #include <Error.h>
 
-typedef enum 
+typedef enum
 {
    MODE_RELATIVE,
    MODE_ABSOLUTE
@@ -30,4 +30,4 @@ struct State
 void ProcessMouseMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 void SetMouseMode(Mode mode);
 void InitMouse(HWND window, Mode mode);
-void ResetMouseState(void);
+void ResetMouseDelta(void);

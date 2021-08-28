@@ -33,7 +33,7 @@ typedef __m128 Vec4;
 typedef struct { Vec4 row[4]; } Mat4;
 
 static const Vec4 Vec1DIV2PI = { LN_1DIV2PI, LN_1DIV2PI, LN_1DIV2PI, LN_1DIV2PI };
-static const Vec4 Vec2PI = { LN_PI * 2.0f, LN_PI * 2.0f, LN_PI * 2.0f, LN_PI * 2.0f };
+static const Vec4 Vec2PI = { LN_2PI, LN_2PI, LN_2PI, LN_2PI };
 
 /// @brief Computes the dot product of two vectors.
 /// @param a Vector a.
@@ -119,7 +119,7 @@ Mat4 vectorcall RotNorm(Vec4 normaxis, float angle);
 /// @returns The rotation matrix.
 Mat4 vectorcall RotAxis(Vec4 axis, float angle);
 
-/// @returns The identity matrix {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}.
+/// @returns The identity matrix.
 Mat4 Identity(void);
 
 /// @brief Normilizes a vector.
@@ -515,8 +515,8 @@ inline Vec4 vectorcall VecNorm(Vec4 a)
 
 inline Vec4 vectorcall VecNormEst(Vec4 a)
 {
-	__m128 temp = _mm_dp_ps(a, a, 0xff);
-	__m128 result = _mm_rsqrt_ps(temp);
+	Vec4 temp = _mm_dp_ps(a, a, 0xff);
+	Vec4 result = _mm_rsqrt_ps(temp);
 	return _mm_mul_ps(result, a);
 }
 

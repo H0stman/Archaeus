@@ -6,13 +6,15 @@ IDXGISwapChain* swap_chain_ptr = NULL;
 ID3D11RenderTargetView* render_target_view_ptr = NULL;
 ID3D11Texture2D* framebuffer = NULL;
 ID3D11InputLayout* input_layout_ptr = NULL;
-ID3D11Buffer* vertexbuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], *index = NULL;
+ID3D11Buffer* vertexbuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], * index = NULL;
 UINT StartSlot = 0, NumBuffers = 0;
 UINT strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], offsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 ID3D11VertexShader* vertex_shader_ptr = NULL;
 ID3D11PixelShader* pixel_shader_ptr = NULL;
 ID3DBlob* vs_blob_ptr = NULL, * ps_blob_ptr = NULL, * error_blob = NULL;
-
+ID3D11Texture2D* DepthStencilBuffer = NULL;
+ID3D11DepthStencilView* depth_view = NULL;
+ID3D11DepthStencilState* depth_state = NULL;
 
 void D3D11Initialize(HWND hndl)
 {
@@ -56,7 +58,43 @@ void D3D11Initialize(HWND hndl)
 
 	hr = ID3D11Device_CreateRenderTargetView(device_ptr, (ID3D11Resource*)framebuffer, NULL, &render_target_view_ptr);
 	assert(SUCCEEDED(hr));
-	ID3D11Texture2D_Release(framebuffer);
+
+	RECT winRect;
+	GetClientRect(hndl, &winRect);
+
+	D3D11_TEXTURE2D_DESC desc =
+	{
+		desc.Width = winRect.right - winRect.left,
+		desc.Height = winRect.bottom - winRect.top,
+		desc.MipLevels = 1,
+		desc.ArraySize = 1,
+		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
+		desc.SampleDesc.Count = 1,
+		desc.SampleDesc.Quality = 0,
+		desc.Usage = D3D11_USAGE_DEFAULT,
+		desc.BindFlags = D3D11_BIND_DEPTH_STENCIL,
+		desc.CPUAccessFlags = 0,
+		desc.MiscFlags = 0
+	};
+
+	hr = ID3D11Device_CreateTexture2D(device_ptr, &desc, 0, &DepthStencilBuffer);
+	assert(SUCCEEDED(hr));
+
+	hr = ID3D11Device_CreateDepthStencilView(device_ptr, (ID3D11Resource*)DepthStencilBuffer, NULL, &depth_view);
+	assert(SUCCEEDED(hr));
+
+	D3D11_DEPTH_STENCIL_DESC depthstencilDesc =
+	{
+		.DepthEnable = TRUE,
+		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL
+	};
+
+	hr = ID3D11Device_CreateDepthStencilState(device_ptr, &depthstencilDesc, &depth_state);
+	assert(SUCCEEDED(hr));
+
+
+
 
 	flags = D3DCOMPILE_ENABLE_STRICTNESS;
 #if defined(DEBUG) || defined(_DEBUG)
@@ -197,9 +235,6 @@ void D3D11Initialize(HWND hndl)
 	hr = ID3D11Device_CreateBuffer(device_ptr, &index_buff_descr, &sr_data, &index);
 	assert(SUCCEEDED(hr));
 
-
-	RECT winRect;
-	GetClientRect(hndl, &winRect);
 	D3D11_VIEWPORT viewport =
 	{
 		.TopLeftX = 0.0f,
@@ -222,18 +257,21 @@ void D3D11Initialize(HWND hndl)
 
 void Release(void)
 {
-	if(error_blob)
-		ID3D10Blob_Release(error_blob);
-	ID3D11RenderTargetView_Release(render_target_view_ptr);
-	ID3D11VertexShader_Release(vertex_shader_ptr);
-	ID3D11PixelShader_Release(pixel_shader_ptr);
-	ID3D11Texture2D_Release(framebuffer);
-	ID3D10Blob_Release(vs_blob_ptr);
-	ID3D10Blob_Release(ps_blob_ptr);
-	ID3D11InputLayout_Release(input_layout_ptr);
-	ID3D11Buffer_Release(vertexbuffers[0]);
-	ID3D11Buffer_Release(index);
-	ID3D11DeviceContext_Release(device_context_ptr);
-	IDXGISwapChain_Release(swap_chain_ptr);
-	ID3D11Device_Release(device_ptr);
+	if (error_blob) ID3D10Blob_Release(error_blob);
+	if (render_target_view_ptr) ID3D11RenderTargetView_Release(render_target_view_ptr);
+	if (vertex_shader_ptr) ID3D11VertexShader_Release(vertex_shader_ptr);
+	if (pixel_shader_ptr) ID3D11PixelShader_Release(pixel_shader_ptr);
+	if (framebuffer) ID3D11Texture2D_Release(framebuffer);
+	if (vs_blob_ptr) ID3D10Blob_Release(vs_blob_ptr);
+	if (ps_blob_ptr) ID3D10Blob_Release(ps_blob_ptr);
+	if (input_layout_ptr) ID3D11InputLayout_Release(input_layout_ptr);
+	if (vertexbuffers[0]) ID3D11Buffer_Release(vertexbuffers[0]);
+	if (index) ID3D11Buffer_Release(index);
+	if (device_context_ptr) ID3D11DeviceContext_Release(device_context_ptr);
+	if (swap_chain_ptr) IDXGISwapChain_Release(swap_chain_ptr);
+	if (DepthStencilBuffer) ID3D11Texture2D_Release(DepthStencilBuffer);
+	if (depth_view) ID3D11DepthStencilView_Release(depth_view);
+	if (depth_state) ID3D11DepthStencilState_Release(depth_state);
+	if (device_ptr) ID3D11Device_Release(device_ptr);
+	if (device_ptr) ID3D11Device_Release(device_ptr);
 }

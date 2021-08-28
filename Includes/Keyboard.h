@@ -11,8 +11,6 @@ typedef enum
 {
    KEY_UP,
    KEY_DOWN,
-   KEY_PRESSED,
-   KEY_RELEASED
 }KeyState;
 
 struct KeyboardState
@@ -28,4 +26,3 @@ struct KeyboardState
 
 void ProcessKeyboardMessage(HWND hndl, UINT message, WPARAM wParam, LPARAM lParam);
 void InitKeyboard(HWND window);
-void ResetKeyboardState(void);

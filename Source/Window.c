@@ -38,7 +38,6 @@ HWND MakeWindow(HINSTANCE hInstance)
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	ResetKeyboardState();
 	switch (uMsg)
 	{
 	case WM_DESTROY:
