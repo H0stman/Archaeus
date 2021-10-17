@@ -1,15 +1,18 @@
-#include <Renderer.h>
+#include <render.h>
+
+//Extern variables
+extern float background_colour[];
 
 ID3D11Device* device_ptr = NULL;
 ID3D11DeviceContext* device_context_ptr = NULL;
 IDXGISwapChain* swap_chain_ptr = NULL;
-ID3D11RenderTargetView* render_target_view_ptr = NULL;
+ID3D11RenderTargetView* render_target_view_arr[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
 ID3D11Texture2D* framebuffer = NULL;
 ID3D11InputLayout* input_layout_ptr = NULL;
 ID3D11Buffer* vertexbuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], * index = NULL;
-UINT StartSlot = 0, NumBuffers = 0;
-UINT strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], offsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-ID3D11VertexShader* vertex_shader_ptr = NULL;
+static UINT StartSlot = 0, NumBuffers = 0;
+static UINT strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], offsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+static ID3D11VertexShader* vertex_shader_ptr = NULL;
 ID3D11PixelShader* pixel_shader_ptr = NULL;
 ID3DBlob* vs_blob_ptr = NULL, * ps_blob_ptr = NULL, * error_blob = NULL;
 ID3D11Texture2D* DepthStencilBuffer = NULL;
@@ -56,7 +59,7 @@ void D3D11Initialize(HWND hndl)
 	hr = IDXGISwapChain_GetBuffer(swap_chain_ptr, 0u, &IID_ID3D11Texture2D, &framebuffer);
 	assert(SUCCEEDED(hr));
 
-	hr = ID3D11Device_CreateRenderTargetView(device_ptr, (ID3D11Resource*)framebuffer, NULL, &render_target_view_ptr);
+	hr = ID3D11Device_CreateRenderTargetView(device_ptr, (ID3D11Resource*)framebuffer, NULL, render_target_view_arr);
 	assert(SUCCEEDED(hr));
 
 	RECT winRect;
@@ -93,12 +96,11 @@ void D3D11Initialize(HWND hndl)
 	hr = ID3D11Device_CreateDepthStencilState(device_ptr, &depthstencilDesc, &depth_state);
 	assert(SUCCEEDED(hr));
 
-
-
-
 	flags = D3DCOMPILE_ENABLE_STRICTNESS;
 #if defined(DEBUG) || defined(_DEBUG)
-	flags |= D3DCOMPILE_DEBUG; // add more debug output
+	flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#elif defined(NDEBUG)
+	flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif
 
 
@@ -159,7 +161,7 @@ void D3D11Initialize(HWND hndl)
 	hr = IDXGISwapChain_GetBuffer(swap_chain_ptr, 0u, &IID_ID3D11Texture2D, (void**)&framebuffer);
 	assert(SUCCEEDED(hr));
 
-	hr = ID3D11Device_CreateRenderTargetView(device_ptr, (ID3D11Resource*)framebuffer, NULL, &render_target_view_ptr);
+	hr = ID3D11Device_CreateRenderTargetView(device_ptr, (ID3D11Resource*)framebuffer, NULL, render_target_view_arr);
 	assert(SUCCEEDED(hr));
 
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
@@ -200,7 +202,7 @@ void D3D11Initialize(HWND hndl)
 			.pSysMem = vertex_data_array
 		};
 
-		hr = ID3D11Device_CreateBuffer(device_ptr, &vertex_buff_descr, &sr_data, &vertexbuffers[0]);
+		hr = ID3D11Device_CreateBuffer(device_ptr, &vertex_buff_descr, &sr_data, vertexbuffers);
 		NumBuffers++;
 		assert(SUCCEEDED(hr));
 	}
@@ -249,23 +251,48 @@ void D3D11Initialize(HWND hndl)
 	ID3D11DeviceContext_IASetPrimitiveTopology(device_context_ptr, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ID3D11DeviceContext_IASetInputLayout(device_context_ptr, input_layout_ptr);
 	ID3D11DeviceContext_IASetVertexBuffers(device_context_ptr, StartSlot, NumBuffers, vertexbuffers, strides, offsets);
-
 	ID3D11DeviceContext_VSSetShader(device_context_ptr, vertex_shader_ptr, NULL, 0u);
 	ID3D11DeviceContext_PSSetShader(device_context_ptr, pixel_shader_ptr, NULL, 0u);
+}
 
+void Render(void)
+{
+	ID3D11DeviceContext_OMSetRenderTargets(device_context_ptr, D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, render_target_view_arr, depth_view);
+
+	for (UINT i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; i++)
+		if (render_target_view_arr[i] != NULL)
+			ID3D11DeviceContext_ClearRenderTargetView(device_context_ptr, render_target_view_arr[i], background_colour);
+
+	if (depth_view)
+		ID3D11DeviceContext_ClearDepthStencilView(device_context_ptr, depth_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	ID3D11DeviceContext_OMSetDepthStencilState(device_context_ptr, depth_state, 0);
+	ID3D11DeviceContext_DrawIndexed(device_context_ptr, 36u, 0u, 0u);
+	IDXGISwapChain_Present(swap_chain_ptr, 1u, 0u);
 }
 
 void Release(void)
 {
+
 	if (error_blob) ID3D10Blob_Release(error_blob);
-	if (render_target_view_ptr) ID3D11RenderTargetView_Release(render_target_view_ptr);
+	for (UINT i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+	{
+		if (render_target_view_arr[i])
+			ID3D11RenderTargetView_Release(render_target_view_arr[i]);
+		else
+			break;
+	}
 	if (vertex_shader_ptr) ID3D11VertexShader_Release(vertex_shader_ptr);
 	if (pixel_shader_ptr) ID3D11PixelShader_Release(pixel_shader_ptr);
 	if (framebuffer) ID3D11Texture2D_Release(framebuffer);
 	if (vs_blob_ptr) ID3D10Blob_Release(vs_blob_ptr);
 	if (ps_blob_ptr) ID3D10Blob_Release(ps_blob_ptr);
 	if (input_layout_ptr) ID3D11InputLayout_Release(input_layout_ptr);
-	if (vertexbuffers[0]) ID3D11Buffer_Release(vertexbuffers[0]);
+
+	for (UINT i = 0; i < D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT; ++i)
+		if (vertexbuffers[i])
+			ID3D11Buffer_Release(vertexbuffers[i]);
+
 	if (index) ID3D11Buffer_Release(index);
 	if (device_context_ptr) ID3D11DeviceContext_Release(device_context_ptr);
 	if (swap_chain_ptr) IDXGISwapChain_Release(swap_chain_ptr);
@@ -273,5 +300,5 @@ void Release(void)
 	if (depth_view) ID3D11DepthStencilView_Release(depth_view);
 	if (depth_state) ID3D11DepthStencilState_Release(depth_state);
 	if (device_ptr) ID3D11Device_Release(device_ptr);
-	if (device_ptr) ID3D11Device_Release(device_ptr);
+	ID3D11DeviceContext_ClearState(device_context_ptr);
 }

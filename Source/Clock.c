@@ -1,28 +1,24 @@
-#include "Clock.h"
+#include "time.h"
 
 static INT64 freq, current;
 static LARGE_INTEGER	largeFreq, count;
-UINT dtacc;
 
 void StartClock(void)
 {
    QueryPerformanceFrequency(&largeFreq);
    freq = largeFreq.QuadPart;
-   current = GetCount();
+   QueryPerformanceCounter(&count);
+   current = count.QuadPart;
 }
 
 double DeltaTime(void)
 {
-   return (((double)GetCount() - (double)current) / (double)freq);
-}
-
-INT64 GetCount(void)
-{
    QueryPerformanceCounter(&count);
-   return count.QuadPart;
+   return (((double)count.QuadPart - (double)current) / (double)freq);
 }
 
 void UpdateClock(void)
 {
-   current = GetCount();
+   QueryPerformanceCounter(&count);
+   current = count.QuadPart;
 }

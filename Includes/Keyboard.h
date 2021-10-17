@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <hidusage.h>
 #include <strsafe.h>
-#include <crtdbg.h>
 #pragma warning(pop);
 
 typedef enum

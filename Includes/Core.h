@@ -1,8 +1,7 @@
 #pragma once
-#include "Renderer.h"
-#include "Camera.h"
-#include "Clock.h"
-
+#include "render.h"
+#include "camera.h"
+#include "time.h"
 
 ///@brief Initializes the engine.
 void Initialize(HWND windowhandle);
@@ -10,5 +9,5 @@ void Initialize(HWND windowhandle);
 ///@brief Updates the game state.
 void Update(void);
 
-///@brief Renders the game state.
+///@brief Executes rendering pipeline.
 void Render(void);

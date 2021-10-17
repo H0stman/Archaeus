@@ -1,30 +1,35 @@
-#include "Core.h"
+#include "core.h"
 
+//Extern variables
 extern struct Camera camera;
-float background_colour[] = { 0.671f, 0.886f, 1.0f, 1.0f };
-ID3D11Buffer* matbuff;
-D3D11_SUBRESOURCE_DATA data;
-D3D11_MAPPED_SUBRESOURCE updatemat;
-Mat4 matrices[3];
+extern ID3D11Device* device_ptr;
+extern ID3D11DeviceContext* device_context_ptr;
+
+float background_colour[] = { 0.047f, 0.235f, 0.650f, 1.0f };
+static ID3D11Buffer* matbuff;
+static D3D11_SUBRESOURCE_DATA data;
+static D3D11_MAPPED_SUBRESOURCE updatemat;
+static hmm_mat4 matrices[3];
 static float angle = 0.0f;
+
 
 void Initialize(HWND windowhandle)
 {
    D3D11Initialize(windowhandle);
-   InitMouse(windowhandle, MODE_RELATIVE);
+   InitMouse(windowhandle, MODE_ABSOLUTE);
    InitializeCamera();
    StartClock();
 
    //Bind camera matrices to GPU buffers.
    D3D11_BUFFER_DESC matrixbufferdesc =
    {
-      .ByteWidth = sizeof(Mat4) * ARRAYSIZE(matrices),
+      .ByteWidth = sizeof(hmm_mat4) * ARRAYSIZE(matrices),
       .Usage = D3D11_USAGE_DYNAMIC,
       .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
       .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE
    };
 
-   matrices[0] = Identity();
+   matrices[0] = HMM_Mat4d(1.0f);
    matrices[1] = camera.view;
    matrices[2] = camera.projection;
 
@@ -36,27 +41,8 @@ void Initialize(HWND windowhandle)
 
 void Update(void)
 {
-
    UpdateCamera((float)DeltaTime());
    UpdateClock();
    ResetMouseDelta();
-
-   HRESULT hr = ID3D11DeviceContext_Map(device_context_ptr, (ID3D11Resource*)matbuff, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &updatemat);
-   HandleHR(hr);
-   Mat4* mat = (Mat4*)updatemat.pData;
-   mat[0] = Mul(RotZ(angle++ / 100), RotY(angle++ / 120));
-   mat[1] = camera.view;
-   mat[2] = camera.projection;
-   ID3D11DeviceContext_Unmap(device_context_ptr, (ID3D11Resource*)matbuff, 0u);
-   ID3D11DeviceContext_VSSetConstantBuffers(device_context_ptr, 0u, 1u, &matbuff);
 }
 
-void Render(void)
-{
-   ID3D11DeviceContext_ClearRenderTargetView(device_context_ptr, render_target_view_ptr, background_colour);
-   ID3D11DeviceContext_ClearDepthStencilView(device_context_ptr, depth_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-   ID3D11DeviceContext_OMSetDepthStencilState(device_context_ptr, depth_state, 0);
-   ID3D11DeviceContext_OMSetRenderTargets(device_context_ptr, 1u, &render_target_view_ptr, depth_view);
-   ID3D11DeviceContext_DrawIndexed(device_context_ptr, 36u, 0u, 0u);
-   IDXGISwapChain_Present(swap_chain_ptr, 1u, 0u);
-}

@@ -1,11 +1,11 @@
-#include "Mouse.h"
+#include "mouse.h"
 
-struct State mousestate;
 
 static HWND windowHandle;
 static RAWINPUTDEVICE Rid;
 static BYTE lpb[sizeof(RAWINPUT)];
 static UINT dwSize = sizeof(RAWINPUT);
+struct State mousestate;
 
 void ProcessMouseMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -97,6 +97,8 @@ void SetMouseMode(Mode mode)
 		ShowCursor(TRUE);
 		mousestate.positionMode = mode;
 	}
+	else
+		OutputDebugString("Mouse mode not supported!");
 }
 
 void InitMouse(HWND window, Mode mode)

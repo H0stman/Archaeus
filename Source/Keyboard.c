@@ -1,4 +1,4 @@
-#include "Keyboard.h"
+#include "keyboard.h"
 
 static RAWINPUTDEVICE Rid;
 static BYTE lpb[sizeof(RAWINPUT)];

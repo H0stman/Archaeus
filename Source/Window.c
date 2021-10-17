@@ -1,6 +1,12 @@
-#include <Window.h>
+#include "window.h"
 
-extern struct KeyboardState keystate;
+/// @brief Handles the window procedure.
+/// @param hwnd A handle to the window.
+/// @param uMsg The message.
+/// @param wParam Additional message information. The contents of this parameter depend on the value of the uMsg parameter.
+/// @param lParam Additional message information. The contents of this parameter depend on the value of the uMsg parameter.
+/// @return The return value is the result of the message processing and depends on the message sent.
+static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 HWND MakeWindow(HINSTANCE hInstance)
 {
@@ -10,10 +16,10 @@ HWND MakeWindow(HINSTANCE hInstance)
 	{
 		.lpfnWndProc = WindowProc,
 		.hInstance = hInstance,
-		.lpszClassName = "CirectX winow class",
+		.lpszClassName = "Window class",
 		.hIcon = LoadIcon(hInstance, IDI_APPLICATION),
 		.style = CS_HREDRAW | CS_VREDRAW,
-		.hCursor = LoadCursor(hInstance, IDC_HAND),
+		.hCursor = LoadCursor(hInstance, IDC_ARROW)
 	};
 
 	RegisterClass(&wc);
@@ -22,7 +28,7 @@ HWND MakeWindow(HINSTANCE hInstance)
 
 	return CreateWindowEx(
 		0,												// Optional window styles.
-		"CirectX winow class",					// Window class
+		"Window class",							// Window class
 		"Archaeus",									// Window text
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,	// Window style
 
@@ -36,7 +42,7 @@ HWND MakeWindow(HINSTANCE hInstance)
 	);
 }
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
@@ -54,8 +60,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW));
 			EndPaint(hwnd, &ps);
+			break;
 		}
 	case WM_ACTIVATEAPP:
 		ProcessMouseMessage(hwnd, uMsg, wParam, lParam);
@@ -83,9 +90,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 		ProcessKeyboardMessage(hwnd, uMsg, wParam, lParam);
 		if (wParam == VK_ESCAPE)
-			PostQuitMessage(0);
+			PostQuitMessage(EXIT_SUCCESS);
 		break;
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
+	return 0;
 }

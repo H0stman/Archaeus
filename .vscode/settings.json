@@ -70,6 +70,22 @@
       "keyboard.h": "c",
       "*.rh": "c",
       "d3d11_4.h": "c",
-      "imm.h": "c"
+      "imm.h": "c",
+      "window.h": "c",
+      "camera.h": "c",
+      "utillib.h": "c",
+      "chstrarr.h": "c",
+      "chstring.h": "c",
+      "stdio.h": "c",
+      "errhandlingapi.h": "c",
+      "utils.h": "c",
+      "vcruntime.h": "c",
+      "tgmath.h": "c",
+      "corecrt.h": "c",
+      "immintrin.h": "c",
+      "intrin0.inl.h": "c",
+      "ammintrin.h": "c",
+      "mm3dnow.h": "c",
+      "setjmp.h": "c"
    },
 }

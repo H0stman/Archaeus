@@ -1,6 +1,6 @@
-#include "Window.h"
-#include "Error.h"
-#include "Core.h"
+#include "window.h"
+#include "error.h"
+#include "core.h"
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {

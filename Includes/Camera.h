@@ -1,15 +1,15 @@
 #pragma once
-#include "Linear.h"
-#include "Mouse.h"
-#include "Keyboard.h"
-#include <crtdbg.h>
+#include "mouse.h"
+#include "keyboard.h"
+#include "import/HandmadeMath.h"
 
-static const Vec4 UP = {0.0f, 1.0f, 0.0f, 0.0f};
+extern struct KeyboardState keystate;
+extern struct State mousestate;
 
 struct Camera
 {
-   Vec4 position, focus, direction;
-   Mat4 view, projection;
+   hmm_vec4 position, focus, direction;
+   hmm_mat4 view, projection;
 };
 
 void UpdateCamera(float delta);
