@@ -1,4 +1,5 @@
 #include "core.h"
+#include "linear.h"
 
 //Extern variables
 extern struct Camera camera;
@@ -9,7 +10,7 @@ float background_colour[] = { 0.047f, 0.235f, 0.650f, 1.0f };
 static ID3D11Buffer* matbuff;
 static D3D11_SUBRESOURCE_DATA data;
 static D3D11_MAPPED_SUBRESOURCE updatemat;
-static hmm_mat4 matrices[3];
+static Mat4 matrices[3];
 static float angle = 0.0f;
 
 
@@ -23,13 +24,13 @@ void Initialize(HWND windowhandle)
    //Bind camera matrices to GPU buffers.
    D3D11_BUFFER_DESC matrixbufferdesc =
    {
-      .ByteWidth = sizeof(hmm_mat4) * ARRAYSIZE(matrices),
+      .ByteWidth = sizeof(Mat4) * ARRAYSIZE(matrices),
       .Usage = D3D11_USAGE_DYNAMIC,
       .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
       .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE
    };
 
-   matrices[0] = HMM_Mat4d(1.0f);
+   matrices[0] = Identity();
    matrices[1] = camera.view;
    matrices[2] = camera.projection;
 
@@ -43,6 +44,6 @@ void Update(void)
 {
    UpdateCamera((float)DeltaTime());
    UpdateClock();
-   ResetMouseDelta();
+   ResetMouseState();
 }
 

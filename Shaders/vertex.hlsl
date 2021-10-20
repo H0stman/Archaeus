@@ -23,9 +23,9 @@ struct vs_out
 
 vs_out vs_main(vs_in input) 
 {
-	vector temp = mul(vector(input.position_local, 1.0f),world);
-	temp = mul(temp, view);
-	temp = mul(temp, projection);
+	vector temp = mul(vector(input.position_local, 1.0f),transpose(world));
+	temp = mul(temp,transpose(view));
+	temp = mul(temp, transpose(projection));
   	vs_out output = (vs_out)0; // zero the memory first
   	output.position_clip = temp;
 	output.colour = input.colour;

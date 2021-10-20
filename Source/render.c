@@ -7,7 +7,7 @@ ID3D11Device* device_ptr = NULL;
 ID3D11DeviceContext* device_context_ptr = NULL;
 IDXGISwapChain* swap_chain_ptr = NULL;
 ID3D11RenderTargetView* render_target_view_arr[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
-ID3D11Texture2D* framebuffer = NULL;
+ID3D11Texture2D* framebuffer = NULL, * DepthStencilBuffer = NULL;
 ID3D11InputLayout* input_layout_ptr = NULL;
 ID3D11Buffer* vertexbuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], * index = NULL;
 static UINT StartSlot = 0, NumBuffers = 0;
@@ -15,6 +15,8 @@ static UINT strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], offsets[D3D11_IA
 static ID3D11VertexShader* vertex_shader_ptr = NULL;
 ID3D11PixelShader* pixel_shader_ptr = NULL;
 ID3DBlob* vs_blob_ptr = NULL, * ps_blob_ptr = NULL, * error_blob = NULL;
+ID3D11DepthStencilState* depth_state = NULL;
+ID3D11DepthStencilView* depth_view = NULL;
 
 
 void D3D11Initialize(HWND hndl)
@@ -235,9 +237,6 @@ void D3D11Initialize(HWND hndl)
 	hr = ID3D11Device_CreateBuffer(device_ptr, &index_buff_descr, &sr_data, &index);
 	assert(SUCCEEDED(hr));
 
-
-	RECT winRect;
-	GetClientRect(hndl, &winRect);
 	D3D11_VIEWPORT viewport =
 	{
 		.TopLeftX = 0.0f,

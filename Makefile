@@ -9,9 +9,9 @@ EXECUTABLE = $(BIN)Archaeus.exe
 SOURCE = Source\\
 
 ## Compile command variables.
-CFLAGS =-c -permissive- -std:c17 -TC -MP -W4 -nologo -I$(INCLUDES) -I$(INCLUDES)cgltf -D"_CRT_SILENCE_NONCONFORMING_TGMATH_H" -D"COBJMACROS" -D"WIN32_LEAN_AND_MEAN" -Fd$(DEBUG)
+CFLAGS =-c -permissive- -std:c17 -TC -MP -W4 -nologo -I$(INCLUDES) -I$(INCLUDES)import -D"_CRT_SILENCE_NONCONFORMING_TGMATH_H" -D"COBJMACROS" -D"WIN32_LEAN_AND_MEAN" -Fd$(DEBUG)
 LFLAGS =-nologo -SUBSYSTEM:WINDOWS $(LIBS)
-LIBS =User32.lib d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib Winmm.lib Gdi32.lib
+LIBS =User32.lib d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib Winmm.lib
 
 debug: $(EXECUTABLE)
 

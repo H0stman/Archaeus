@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 #include "mouse.h"
-=======
-#include <Mouse.h>
->>>>>>> parent of a1becee (Depth stencil.)
 
 
 static HWND windowHandle;
@@ -17,21 +13,21 @@ void ProcessMouseMessage(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_INPUT:
-	{
-		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
-		RAWINPUT* raw = (RAWINPUT*)lpb;
-		if (raw->header.dwType == RIM_TYPEMOUSE)
 		{
-			mousestate.x = raw->data.mouse.lLastX;
-			mousestate.y = raw->data.mouse.lLastY;
-			mousestate.leftButton = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) == RI_MOUSE_LEFT_BUTTON_DOWN ? TRUE : FALSE;
-			mousestate.rightButton = (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) == RI_MOUSE_RIGHT_BUTTON_DOWN ? TRUE : FALSE;
-			mousestate.middleButton = (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) == RI_MOUSE_MIDDLE_BUTTON_DOWN ? TRUE : FALSE;
-			if ((raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) == RI_MOUSE_WHEEL)
-				mousestate.scrollWheelDelta = (short)raw->data.mouse.usButtonData / WHEEL_DELTA;
+			GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+			RAWINPUT* raw = (RAWINPUT*)lpb;
+			if (raw->header.dwType == RIM_TYPEMOUSE)
+			{
+				mousestate.x = raw->data.mouse.lLastX;
+				mousestate.y = raw->data.mouse.lLastY;
+				mousestate.leftButton = (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) == RI_MOUSE_LEFT_BUTTON_DOWN ? TRUE : FALSE;
+				mousestate.rightButton = (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) == RI_MOUSE_RIGHT_BUTTON_DOWN ? TRUE : FALSE;
+				mousestate.middleButton = (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) == RI_MOUSE_MIDDLE_BUTTON_DOWN ? TRUE : FALSE;
+				if ((raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) == RI_MOUSE_WHEEL)
+					mousestate.scrollWheelDelta = (short)raw->data.mouse.usButtonData / WHEEL_DELTA;
+			}
+			break;
 		}
-		break;
-	}	
 	case WM_ACTIVATEAPP:
 		break;
 
