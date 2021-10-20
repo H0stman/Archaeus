@@ -1,4 +1,4 @@
-#include "camera.h"
+#include <Camera.h>
 
 static const hmm_vec3 UP = { 0.0f, 1.0f, 0.0f };
 static const float rotation = 0.6f, speed = 6.0f;
@@ -37,7 +37,7 @@ void InitializeCamera(void)
 	camera.focus = HMM_Vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	camera.direction = HMM_Vec4(0.0f, 0.0f, 1.0f, 0.0f);
 
-	///NOTE: Transposing is required since the shaders handle matrices in column-major. This is handled in the shader.
-	camera.view = HMM_LookAt(camera.position.XYZ, HMM_AddVec3(camera.direction.XYZ, camera.position.XYZ), UP);
-	camera.projection = HMM_Perspective(HMM_ToRadians(70.0f), 1424.f / 728.f, 0.1f, 100.0f);
+	///NOTE: Transposing is required since the shaders handle matrices in column-major. It is now done in the shader.
+	camera.view = LookTo(camera.position, camera.direction, UP);
+	camera.projection = Persp(toRad(70.0f), 1424.f / 728.f, 0.1f, 100.0f);
 }

@@ -19,6 +19,11 @@ double DeltaTime(void)
 
 void UpdateClock(void)
 {
+<<<<<<< HEAD
    QueryPerformanceCounter(&count);
    current = count.QuadPart;
+=======
+   current = GetCount();
+   //dtacc += DeltaTime();
+>>>>>>> parent of a1becee (Depth stencil.)
 }

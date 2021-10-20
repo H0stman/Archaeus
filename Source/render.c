@@ -15,9 +15,7 @@ static UINT strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], offsets[D3D11_IA
 static ID3D11VertexShader* vertex_shader_ptr = NULL;
 ID3D11PixelShader* pixel_shader_ptr = NULL;
 ID3DBlob* vs_blob_ptr = NULL, * ps_blob_ptr = NULL, * error_blob = NULL;
-ID3D11Texture2D* DepthStencilBuffer = NULL;
-ID3D11DepthStencilView* depth_view = NULL;
-ID3D11DepthStencilState* depth_state = NULL;
+
 
 void D3D11Initialize(HWND hndl)
 {
@@ -237,6 +235,9 @@ void D3D11Initialize(HWND hndl)
 	hr = ID3D11Device_CreateBuffer(device_ptr, &index_buff_descr, &sr_data, &index);
 	assert(SUCCEEDED(hr));
 
+
+	RECT winRect;
+	GetClientRect(hndl, &winRect);
 	D3D11_VIEWPORT viewport =
 	{
 		.TopLeftX = 0.0f,
