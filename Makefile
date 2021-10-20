@@ -31,3 +31,9 @@ release:
 clean:
    -del $(BIN)*.ilk $(BIN)*.pdb $(BIN)*.exe $(BUILD)*.obj $(DEBUG)*.pdb
    @echo Clean complete!
+
+init:
+   if not exist $(MAKEDIR)\Build mkdir $(MAKEDIR)\Build
+   if not exist $(MAKEDIR)\Debug mkdir $(MAKEDIR)\Debug
+   if not exist $(MAKEDIR)\Bin mkdir $(MAKEDIR)\Bin
+   if not exist $(MAKEDIR)\Resources mkdir $(MAKEDIR)\Resources
